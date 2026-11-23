@@ -251,7 +251,9 @@ static int read_small(const char *path, char *b, int size)
  * (800 - margin_w) x (480 - margin_h); a different shape needs a matching geom.txt.
  * Example for a full 1280x480 screen with the right proportions on a CIC whose video
  * scaler only takes ~600 px wide sources (E60): video.txt "200 256 96" and
- * geom.txt "100 128 600 224 0 0 1280 480". */
+ * geom.txt "100 128 600 224 0 0 1280 480".
+ * Margins above 600 x 320 (UI smaller than 200 x 160) or dpi outside 60..400 are
+ * ignored and the defaults kept. */
 static void video_cfg(unsigned *mw, unsigned *mh, unsigned *dpi)
 {
     char b[64]; unsigned v[3]; int k = 0; const char *p = b;
@@ -261,10 +263,10 @@ static void video_cfg(unsigned *mw, unsigned *mh, unsigned *dpi)
         while (*p && (*p < '0' || *p > '9')) ++p;
         if (!*p) break;
         v[k] = 0;
-        while (*p >= '0' && *p <= '9') v[k] = v[k] * 10 + (unsigned)(*p++ - '0');
+        while (*p >= '0' && *p <= '9') { if (v[k] < 100000) v[k] = v[k] * 10 + (unsigned)(*p - '0'); ++p; }
         ++k;
     }
-    if (k >= 2 && v[0] < 800 && v[1] < 480) { *mw = v[0]; *mh = v[1]; }
+    if (k >= 2 && v[0] <= 600 && v[1] <= 320) { *mw = v[0]; *mh = v[1]; }
     if (k >= 3 && v[2] >= 60 && v[2] <= 400) *dpi = v[2];
 }
 /* driver.txt: "right" for right-hand drive; anything else (or no file) = left. */
@@ -289,7 +291,7 @@ static int send_sd_response(aa_t *a)
     video_cfg(&mw, &mh, &dpi);
     memset(&ch, 0, sizeof ch); memset(&sub, 0, sizeof sub); memset(&cfg, 0, sizeof cfg);
     /* v19: field 2 frame_rate 2 = 30 fps (1 = 60 fps, what v13-v18 requested). */
-    /* v47: margin_width (default 80, file margin_w.txt overrides): DSP shows only 720 px. */
+    /* margins/dpi: AAP_MARGIN_W/H and AAP_DPI by default, video.txt overrides (video_cfg). */
     pb_u(&cfg, 1, 1); pb_u(&cfg, 2, 2); pb_u(&cfg, 3, mw); pb_u(&cfg, 4, mh); pb_u(&cfg, 5, dpi);
     pb_u(&sub, 1, 3 /* VIDEO */); pb_msg(&sub, 4, &cfg); pb_u(&sub, 5, 1);
     pb_u(&ch, 1, CH_VIDEO); pb_msg(&ch, 3, &sub); pb_msg(&sd, 1, &ch);

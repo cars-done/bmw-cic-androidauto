@@ -625,7 +625,7 @@ static void iba_do(bmw::PluginApp* app, int stopping) {
         typedef void* (*Draw)(); void* draw = ((Draw)iba_a(0x08ae34e4UL))();
         if (!draw) { g_iba.failed = 1; return; }
         unsigned long* vt = *(unsigned long**)draw;
-        if (vt[20] != kIbaLayerManagerGetter) { g_iba.failed = 1; return; }
+        if (vt[20] != iba_a(kIbaLayerManagerGetter)) { g_iba.failed = 1; return; }
         typedef void* (*Manager)(void*); g_iba_mgr = ((Manager)vt[20])(draw);
         if (!g_iba_mgr) { g_iba.failed = 1; return; }
         vt = *(unsigned long**)g_iba_mgr;

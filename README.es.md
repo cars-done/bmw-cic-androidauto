@@ -184,6 +184,8 @@ ajuste. El plugin nunca los crea.
   `160 160 140`). Android Auto dibuja su interfaz en un área de
   (800 - margen_ancho) x (480 - margen_alto) del vídeo de 800x480; ajusta `geom.txt`
   a juego. Menos dpi = interfaz más pequeña, cabe más.
+  Márgenes mayores que `600 320` o dpi fuera de 60-400 se ignoran (quedan los valores
+  por defecto).
 * `driver.txt`: `right` para volante a la derecha (la barra de Android Auto pasa a la
   derecha); por defecto izquierda.
 * `vlead_ms.txt`: margen de vídeo en ms (por defecto 300; más alto, menos cortes
@@ -229,7 +231,8 @@ unos KB. Para soportar una:
    el desplazamiento de sus vecinas, mueve las direcciones de datos según el
    desplazamiento medido y comprueba cada vtable por su nombre de tipo C++. No
    imprime una tabla incompleta.
-4. Añade la salida a `src/plugin/iba_profiles.h` y una línea a `kIbaProfiles`.
+4. Añade la salida a `src/plugin/iba_profiles.h`, renombra sus tablas `kXlat_X` /
+   `kSigFix_X` (p. ej. `kXlatE61`, `kSigFixE61`) y añade una línea a `kIbaProfiles`.
 
 En marcha, el plugin usa el primer perfil cuyas huellas coinciden todas; con los logs
 activados, `plugin.log` muestra `HmiMain profile ...`.

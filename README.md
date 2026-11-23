@@ -181,6 +181,7 @@ word is `default` removes that setting. The plugin itself never creates them.
 * `video.txt`: `margin_w margin_h [dpi]` asked from the phone (default `160 160 140`).
   Android Auto draws its UI in a (800 - margin_w) x (480 - margin_h) area of the
   800x480 stream; change `geom.txt` to match. Lower dpi = smaller UI, more fits.
+  Margins above `600 320` or dpi outside 60-400 are ignored (defaults kept).
 * `driver.txt`: `right` for right-hand drive (the Android Auto rail goes to the right);
   default left.
 * `vlead_ms.txt`: video lead in ms (default 300; higher = fewer freezes, more latency).
@@ -220,7 +221,8 @@ To support one:
    fingerprints (masking literal-pool addresses), resolves repeated ones with the
    shift of their neighbours, moves the data addresses by the measured data shift and
    checks every vtable by its C++ type name. It refuses to print an incomplete table.
-4. Add the output to `src/plugin/iba_profiles.h` and a line to `kIbaProfiles`.
+4. Add the output to `src/plugin/iba_profiles.h`, rename its `kXlat_X` / `kSigFix_X`
+   tables (e.g. `kXlatE61`, `kSigFixE61`) and add a line to `kIbaProfiles`.
 
 At run time the plugin uses the first profile whose fingerprints all match; with
 logs ON, `plugin.log` shows `HmiMain profile ...`.
